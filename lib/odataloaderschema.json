@@ -1,0 +1,437 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "odataloaderschema.json",
+    "title": "ODataLoader configuration file schema",
+    "description": "",
+    "type": "object",
+    "additionalItems": false,
+    "properties": 
+    {
+        "maxLogFiles":{
+            "type": "integer",
+            "description": "Define the maximum number of logs files to retain"
+        },
+        "connections" : {
+            "type" :"array",
+            "items": {
+                "type" :"object",
+                "additionalProperties": true,
+                "properties": {
+                    "connectionName" : {
+                        "type" :"string",
+                        "description": "Name of the connectivity definition, used when referenced from actions"
+                    }
+                },
+                "required": ["connectionName"]
+            }
+        },
+
+        "actions": {
+            "description": "The unique identifier for a product",
+            "type": "array",
+            "items" : {
+                "type" : "object",
+                "additionalProperties": false,
+                "patternProperties": {
+                    "^sourceSQLQuery[.](1[0-9]+|[2-9][0-9]*)$": {
+                        "type": "string",
+                        "description": ""
+                    },
+                    "^sourceSQLQueryNextPageScript[.](1[0-9]+|[2-9][0-9]*)$": {
+                        "type": "string",
+                        "description": ""
+                    }
+                },
+                "properties":{
+                    "ID": {
+                        "type" : "string",
+                        "description": "Identifier of the action displayed in the log"
+                    },
+                    "enabled": {                                                
+                        "enum" : [true,false,0,1],
+                        "description": "Execute the action when running the configuration"
+                    },
+                    "object": {
+                        "type" : "string",
+                        "description": "System name of the Omada data object type the action is applied to, for example 'Identity' or 'Resource'"
+                    },
+                    "connectionName" : {
+                        "type" : "string",
+                        "description": "Select connectivity configuration by specifying the name of the config"
+                    },
+                    "sourcefile" : {
+                        "type" : "string",
+                        "description": "CSV file of the data to be processed by the loader"
+                    },
+                    "sourceDelimiter" : {
+                        "type" : "string",
+                        "description": "Delimiter used in the CSV file, for example , or ;"
+                    },
+                    "sourceConst":{
+                        "type" : "array",
+                        "description": "",
+                        "items": {
+                            "type" : "object"
+                        }
+                    },
+                    "sourceOmadaOdataObject" : 
+                    {
+                        "type" :"string",
+                        "description": "Query Omada via OData for objects of the type defined here (use the DOT system name) as the source of the action"
+                    },
+                    "sourceOmadaOdataParams" :
+                    {
+                        "type" :"string",
+                        "description": "Parameters for OData query to select properties and filtering, example: \"?$filter=?ISLOGICALSYSTEM eq true&$top=10\""
+                    },
+                    "sourceOmadaOdataParamsScript":
+                    {
+                        "type" :"string",
+                        "description": "Script that define the parameters for OData query to select properties and filtering, $page contain the page number. Example: return '?&$orderby=Id&$top=4&$skip=' + $page*4"
+                    },
+                    "sourceOmadaQueryDatabase" :
+                    {
+                        "type" : "string",
+                        "description": "Database in Omada",
+                        "enum": ["ODW", "ODWS", "ODWMD", "OISES", "ROPE", "OPS", "ESARC"]
+                    },
+                    "sourceSQLServerInstance" :{
+                        "type" :"string",
+                        "description": "SQL server instance"
+                    },
+                    "sourceSQLServerDatabase": {
+                        "type" :"string",
+                        "description": "SQL server database name"
+                    },
+                    "sourceSQLQuery":
+                    {
+                        "type" :"string",
+                        "description": "SQL select statement"
+                    },
+                    "sourceSQLQueryFile":
+                    {
+                        "type" :"string",
+                        "description": "SQL file containing select statement"
+                    },
+                    "sourceSQLQueryNextPageScript":
+                    {
+                        "type" :"string",
+                        "description": "Script to define the SQL select statement for next page. \nVariables: \n\t   $page is page number starting at 2\n    $lastIdentifier is the value from the previous page defined by the config parameter sourceLastIdentifierColumn"
+                    },
+                    "sourceSQLQueryNextPageScriptFile":
+                    {
+                        "type" :"string",
+                        "description": "Script file to define the SQL select statement for next page. \nVariables: \n\t   $page is page number starting at 2\n    $lastIdentifier is the value from the previous page defined by the config parameter sourceLastIdentifierColumn"
+                    },
+                    "sourceLastIdentifierColumn":{
+                        "type" :"string",
+                        "description": "For use with pagination the variable $lastIdentifier is populated with the value from the last record in the previous page with the column name specified"
+                    },
+                    "sourceOPS" :{
+                        "type" :"object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "OPSJobStatus": {
+                                "type" :"string",
+                                "enum" :["Review","Completed","Partially_completed","Retry","Failed","Relayed"]
+                            },
+                            "targetSystemName" : {
+                                "type" :"string",
+                                "description": "Name of target system, can be partial like in the prov. jobs UI search columns"
+                            },
+                            "jobOrigin" : {
+                                "type" :"string",
+                                "description": "",
+                                "enum": ["","RoPE","DOLM"]
+                            },
+                            "identityName" : {
+                                "type" :"string",
+                                "description": "Name of identity system, can be partial like in the prov. jobs UI search columns"
+                            },
+                            "batchSize" : {
+                                "type" :"integer",
+                                "description": "Max. number of jobs to read in each call"
+                            }
+                        }
+                    },
+                    "sourceOPSClaims": {
+                        "type" :"object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "OPSClaimStatus" : {
+                                "enum":["Queued","Relayed","Failed","Completed"]
+                            },
+                            "targetSystemName" : {
+                                "type" :"string",
+                                "description": "Name of target system, can be partial like in the claims UI search columns"
+                            },
+                            "accountName" : {
+                                "type" :"string",
+                                "description": "Account name, can be partial like in the claims UI search columns"
+                            },
+                            "identityName" : {
+                                "type" :"string",
+                                "description": "Identity display name, can be partial like in the claims UI search columns"
+                            },
+                            "resource": {
+                                "type" :"string",
+                                "description": "Resource name, can be partial like in the claims UI search columns"
+                            },
+                            "batchSize": {
+                                "type" : "integer",
+                                "description": "Max. number of claims to read in each call"
+                            }
+                        }
+                    },
+
+                    "sourceMaxPages" :
+                    {
+                        "type" : "integer",
+                        "description": "Maximum number of query executions when using SQL, OData or Omada Query as the source"
+                    },
+
+                    "operation" : {
+                        "type" : "string",
+                        "description": "Operation to perform on the targeted data object in Omada",
+                        "enum": ["CreateUpdate","Update","Delete","UnDelete","CreateIfNotExists","FastCreate","FastUpdateByOmadaId","FastDeleteByOmadaId","Test","OPSArchiveJobs","OPSReleaseJobs","OPSRetryJobs","ROPEQueueIdentites","SetSystemReviewMode","OPSExpireClaim","SaveDataToCSV","CreateAccessRequest"]
+                    },
+
+                    "sourceIdentifier" : {
+                        "type" : "string",
+                        "description": "Name of the value column in the source used as key and to aggregate multiple records in the source into one object"
+                    },
+                    "sourceIdentifierScript" : {
+                        "type":"string",
+                        "description": "Script to resolve the identifier of a record, data is available in the $record variable"
+                    },
+                    "sourceDisplayName" : {
+                        "type" : "string",
+                        "description": "Optional value column for displaying in the log"
+                    },
+                    "targetIdentifier" : {
+                        "type" : "string",
+                        "description": "System name of the Data Object property used to lookup the object in Omada. For advanced queries use the parameter targetObjectQuery"
+                    },
+                    "targetObjectQuery" : {
+                        "type" : "string",
+                        "description": "Query string used to lookup the object in Omada with OData. Values from the record can be inserted by specifying the column name in curly brackets {}. Example: \"ROLEID eq '{u_resid}'\""
+                    },                    
+                    "maxObjects" : {
+                        "type" : "integer",
+                        "description": "Define the maximum number of objects to process (for testing). Zero mean process all"
+                    },
+                    "batchSize" : {
+                        "type" : "integer",
+                        "description": "Batch size for FastBatchCreate operation, should be 20-50 in most cases."
+                    },
+                    "maxConcurrentJobs" : {
+                        "type":"integer",
+                        "description": "The maximum number of concurrent processes is defined by this setting. For most cases the value should be 3-10 as too many parallel processes will have a negative impact on performance or even lead to errors."
+                    },
+                    "startIndex" : {
+                        "type" : "integer",
+                        "description": "Define the first record in the source to process (skipping the prior ones),\nImportant: the first record have index 0"
+                    },
+                    "onError" : {
+                        "type" : "string",
+                        "description": "",
+                        "enum": ["continue","halt"]
+                    },
+                    "progressTracking" : {
+                        "enum" : [true,false,0,1],
+                        "description": "Enables progress tracking to allow rerun of the action without processing already processed objects"
+                    },
+                    "sleep": {
+                        "type" : "integer",
+                        "description": "Number of milliseconds to wait between processing of each record, default 0"
+                    },
+                    
+                    "recordFilter": {
+                        "type":"array",
+                        "items": {
+                            "type" : "object",
+                            "description":"",
+                            "additionalProperties": false,
+                            "required":["filterType"],
+                            "properties":{
+                                "name":{
+                                    "type":"string"
+                                },
+                                "filterType": {
+                                    "type":"string",
+                                    "description": "",
+                                    "enum": ["Script","CSVFile"]
+                                },
+                                "script":{
+                                    "type":"string",
+                                    "description": "powershell script return $true to filter record out, record values are available in the variable $record"
+                                },
+                                "excludelistFile": {
+                                    "type" : "string",
+                                    "description": "CSV file (UTF8 encoded) of records (by ID) to exclude"
+                                },
+                                "fileIdentifierCol": {
+                                    "type" : "string",
+                                    "description": "Column in CSV file containing the list of IDs to exclude"
+                                },
+                                "recordProperty": {
+                                    "type" : "string",
+                                    "description": "Property on the source record used as ID"
+                                },
+                                "delimiter": {
+                                    "type" : "string",
+                                    "description": "Delimiter used in the CSV file, for example , or ;"
+                                },
+                                "ignoreCase": {
+                                    "type":"boolean",
+                                    "description": "When enable the matching values are compared ignoring case\n(example: 'id17' is matching 'ID17') "
+                                },
+                                "comment": {
+                                    "type":"string"
+                                }
+                            }
+                        }
+                    },
+
+                    "preProcessing":{
+                        "type":"array",
+                        "description": "",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["processingType"],
+                            "properties":{
+                                "processingType": {
+                                    "enum": ["csvResolver","odataResolver","script"]
+                                },
+                                "name": {
+                                    "type":"string"
+                                },
+                                "sourcefile": {
+                                    "type" : "string",
+                                    "description": "CSV file (UTF8 encoded)"
+                                },
+                                "sourceDelimiter": {
+                                    "type" : "string",
+                                    "description": "Delimiter used in the CSV file, for example , or ;"
+                                },
+                                "lookupProperty": {
+                                    "type" : "string",
+                                    "description": "The property in the record to search for in the csv file"
+                                },
+                                "lookupColumn": {
+                                    "type" : "string",
+                                    "description": "The column in the the CSV file to search in"
+                                },
+                                "valueColumn": {
+                                    "type" : "string",
+                                    "description": "The column in the csv to set in the record"
+                                },
+                                "valueProperty": {
+                                    "type" : "string",
+                                    "description": "The property in the record to receive the value"
+                                },
+                                "notFoundAction": {
+                                    "type" : "string",
+                                    "enum" : ["ignore","halt"],
+                                    "description": ""
+                                },
+                                "ignoreCase": {
+                                    "type":"boolean",
+                                    "description": "When enable the matching values are compared ignoring case\n(example: 'id17' is matching 'ID17') "
+                                },
+                                "queryDOT": {
+                                    "type" : "string",
+                                    "description": "System name of the data object type to search for"
+                                },
+                                "queryFilter": {
+                                    "type" : "string",
+                                    "description": "OData style filter to search for the object. Properties from the source record can be inserted in curly brackets"
+                                },
+                                "queryProperty": {
+                                    "type" : "string",
+                                    "description": "Property system name on the Omada Data Object to search for"
+                                },
+                                "SkipNotFound":{
+                                    "type":"boolean",
+                                    "description": "When enabled the record processing continues even when no result is returned for the lookup, otherwise processing of the object fails"
+                                },
+                                "logNoMatch":{
+                                    "type":"boolean",
+                                    "description": "Log when no match is found"
+                                },
+                                "logMatch":{
+                                    "type":"boolean",
+                                    "description": "Log when match is found"
+                                },
+                                "script":{
+                                    "type":"string",
+                                    "description": "Script returning a value, the values are available in the $record variable"
+                                }
+                            }
+
+                        }
+
+                    },
+
+                    "map":{
+                        "type" : "array",
+                        "description": "Defines the mapping from the source record to the target Omada data object",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties":{
+                                "sourceProperty": {
+                                    "type" : "string",
+                                    "description": "The name of the property from source data or defined in preprocessing that contain the value to be set"
+                                },
+                                "sourceScript": {
+                                    "type" : "string",
+                                    "description": "Script that return the value to be set. Source data is available in the variable $record"
+                                },
+                                "const": {
+                                    "type" : ["string","boolean","integer","array"],
+                                    "description": "Constant value to be set"
+                                },
+                                "defaultValue": {
+                                    "type": ["string","boolean","integer","array"],
+                                    "description": "Default value used if the value of sourceProperty is empty"
+                                },
+                                "inputdateformat": {
+                                    "type": "string",
+                                    "description": "Define the format of the date in the source data, example yyyy-MM-ddTHH:mm:sszzz"
+                                },
+                                "targetProperty": {
+                                    "type" : "string",
+                                    "description": "System name of the Omada property to receive the value"
+                                },
+                                "KeyProperty": {
+                                    "type" : "string",
+                                    "description": "When assigning values to reference properties this define the property name of the referenced object"
+                                },
+                                "required": {
+                                    "type" : "boolean",
+                                    "description": ""
+                                },
+                                "deltaOp": {
+                                    "enum" : ["Add","Remove"],
+                                    "description": "Define delta operation (Add/Remove) for reference properties"
+                                },
+                                "deltaOpScript" :{
+                                    "type" : "string",
+                                    "description": "Script to define the delta oparation (Add or Remove) - the values of the record being processed are available in $record"
+                                }
+                            }
+                        }
+                    },
+
+                    "": {
+                            "type" : "string",
+                            "description": ""
+                        }
+                },
+                "required": ["ID","enabled","object","operation"]
+            }
+        }
+    }
+  }
