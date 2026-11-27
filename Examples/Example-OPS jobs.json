@@ -1,0 +1,71 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "Release OPS Jobs",
+			"enabled" : 0,
+
+			"object" : "OPSJob",
+			"sourceConst": [
+				{
+					"JobId" : 170
+				},
+				{
+					"JobId" : 1170
+				}
+			],
+			
+			"operation" : "OPSReleaseJobs",
+            "sourceIdentifierScript" : "return 'Batchgrp'",
+			"sourceDisplayName" : "JobName",			
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "JobId",
+						"targetProperty" : "JobId",
+						"KeyProperty": "Id"
+					}
+				]			
+		},
+		{
+			"ID" : "ArchiveOPSJobs",
+			"enabled" : 0,
+
+			"object" : "OPSJob",
+
+			"sourceOPS": {
+				"OPSJobStatus" : "Failed",
+				"targetSystemName" : "Omada",
+				"jobOrigin" : "",
+				"identityName" : "",
+				"batchSize" : 100
+			},
+			
+            "operation" : "OPSArchiveJobs",			
+            "sourceIdentifierScript" : "return 'Batchgrp'",
+			"sourceDisplayName" : "jobId",			
+			
+			"maxObjects" : 0,
+			"sourceMaxPages": 2,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "jobId",
+						"targetProperty" : "jobId",
+						"KeyProperty": "Id"
+					}
+				]			
+		}
+	]
+}

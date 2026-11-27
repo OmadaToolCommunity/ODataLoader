@@ -1,0 +1,8 @@
+SystemName,ResourceId,ApplicationID,ApplicationName,AppResourceId,AppResourceName
+Active Directory corporate.com,ODWUSERS,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,e897386b-a275-4efc-b4d2-2577c352da33,ODW Users
+Active Directory corporate.com,DM - READ DOCUMENTS,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,2f8b3e8c-324d-4872-b7e5-3d28094c61e7,Read docs in DM
+Active Directory corporate.com,AFS - START INVESTIGATIONS,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,dbd12f63-23ee-4d07-95ca-ddd27fd07843,Start investigation
+Active Directory corporate.com,DM - Write Documents,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,dbd12f63-23ee-4d07-95ca-ddd27fd07843,Start investigation
+Active Directory corporate.com,Chicago All - GBG,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,73615e05-7751-497f-8b82-60781ce433e6,Appres 3
+Active Directory corporate.com,All in US - GBG,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,73615e05-7751-497f-8b82-60781ce433e6,Appres 3
+Active Directory corporate.com,Approve Purchase Orders,b12702e1-17b5-4200-9fdd-ec37bd38ea85,Gurli Gris,73615e05-7751-497f-8b82-60781ce433e6,Appres 3

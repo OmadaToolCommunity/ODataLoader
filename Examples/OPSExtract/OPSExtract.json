@@ -1,0 +1,40 @@
+{
+	"$schema": "../../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "GetOPSJobsData",
+			"enabled" : 1,
+
+			"object" : "jobs.csv",			
+            "operation" : "SaveDataToCSV",
+			
+			"sourceOmadaQueryDatabase": "OPS",
+			"sourceSQLQueryFile": "opsjobs.sql",
+			"sourceSQLQueryNextPageScriptFile": "opsjobs.ps1",
+			"sourceLastIdentifierColumn": "jobid",
+			"sourceDelimiter": ";",
+
+			"maxObjects" : 0,
+			"sourceMaxPages": 10
+		},
+		{
+			"ID" : "GetIdentityData",
+			"enabled" : 1,
+
+			"object" : "Identities.csv",			
+            "operation" : "SaveDataToCSV",
+			
+			"sourceOmadaQueryDatabase": "ESARC",
+			"sourceSQLQueryFile": "Identities.sql",
+			"sourceSQLQueryNextPageScriptFile": "Identities.ps1",			
+			"sourceLastIdentifierColumn": "_id",
+			"sourceDelimiter": ";",
+
+			"maxObjects" : 0,
+			"sourceMaxPages": 10
+		}
+	]
+}

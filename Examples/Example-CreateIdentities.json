@@ -1,0 +1,167 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"httpConfig" : {
+		
+		"timeoutSec"          : "600",		 		
+		"webprotocol"	      : "https://",
+		"webhost"		      : "rla.omadadev.cloud",
+		"httpDetailedLogging" : 0,
+
+		"authentication" 	  : "OAuthAzureADInteractive",
+
+		"Integrated" : "No data required",
+		
+		"Cookie" : 
+		{
+			"cookie" : ""
+		},
+		
+		"OAuthAzureADInteractive" : 
+		{
+			"oauthTenantId"  : "",			
+			"oauthClientId"  : "",
+			"oauthScope"     : "api:///omada"
+		},
+
+		"OAuthAzureADClientCredentials" : 
+		{
+			"oauthTenantId"  : "",
+			"oauthClientId"  : "",
+			"oauthScope"     : "api:///.default",
+			"oauthClientSecretFile" : "oauthsecret.txt"
+		}
+	},
+	
+	"actions" :
+	[
+		{
+			"ID" : "ouCreate",
+			"enabled" : 1,
+
+			"sourceConst" :
+			[
+				{
+					"OUID"   : "GBG_AAL.B.BU",
+					"ouName" : "GBG Aalborg business Unit"
+				}
+			],
+			
+			"object" : "Orgunit",
+			"sourceIdentifier" : "OUID", 			
+			"targetIdentifier" : "OUID",
+			
+			"operation" : "CreateUpdate",
+			
+			"sleep" : 0,
+			"maxObjects" : 30,
+			"onError" : "continue",
+			"progressTracking" : false,
+			"map" : 
+				[
+					{
+						"sourceProperty" : "OUID",
+						"targetProperty" : "OUID",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "ouName",
+						"targetProperty" : "NAME",
+						"required"       : true
+					},
+					{
+						"const"          : "OrgUnit",
+						"targetProperty" : "OUTYPE",
+						"KeyProperty"    : "NAME",
+						"required"       : true
+					}
+					
+				]
+		},
+		{
+			"ID" : "identityCreate",
+			"enabled" : 1,
+
+			"sourceSQLServerInstance" : "localhost",
+			"sourceSQLServerDatabase" : "HR2",
+			"sourceSQLQuery" : "SELECT * from gbg.[identities]",
+			
+			"object" : "Identity",
+			"sourceIdentifier" : "UID", 			
+			"targetIdentifier" : "IDENTITYID",
+			
+			"operation" : "FastCreate",
+			"batchSize" : 2,
+			"maxConcurrentJobs" : 3,
+			
+			"sleep" : 0,
+			"maxObjects" : 30,
+			"onError" : "continue",
+			"progressTracking" : true,
+			
+			"map" : 
+				[
+					{
+						"sourceProperty" : "UID",
+						"targetProperty" : "IDENTITYID",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "Firstname",
+						"targetProperty" : "Firstname",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "Lastname",
+						"targetProperty" : "Lastname",
+						"required"       : true
+					},
+					{						
+						"inputdateformat": "MM/dd/yyyy HH:mm:ss",
+						"sourceProperty" : "validfrom",
+						"targetProperty" : "VALIDFROM",
+						"required"       : true						
+					},
+					{
+						"inputdateformat": "MM/dd/yyyy HH:mm:ss",
+						"sourceProperty" : "validto",
+						"targetProperty" : "VALIDTO",
+						"required"       : true
+					},
+					{
+						"const"			 : "Test identity",					
+						"targetProperty" : "JOBTITLE"
+					},
+					{
+						"const"			 : "False",					
+						"targetProperty" : "TERMSDOCPENDINGACCEPTANCE"
+					},
+					{						
+						"sourceProperty" : "status",
+						"targetProperty" : "IDENTITYSTATUS"
+					},
+                    {						
+						"const" : "employee",
+						"targetProperty" : "IDENTITYCATEGORY"
+					},
+					{
+						"#const" 		 : "GBG_AAL.B.BU",
+						"#comment"       : "the line below creates an intentional error, use the const above to remediate it",
+						"sourceScript"   : "if ($record.uid -eq 'DANTOW') {return 'GBG_NYC.B.BU'} else {return 'GBG_AAL.B.BU'}",
+						"targetProperty" : "OUREF",
+						"KeyProperty"	 : "OUID"
+					},
+					{
+						"sourceProperty" : "classification",
+						"targetProperty" : "CLT_TAGS",
+						"KeyProperty"	 : "NAME"
+					},
+					{
+						"const" 		 : "17",
+						"targetProperty" : "RISKSCORE"
+					}					
+				]			
+		}
+	]
+}

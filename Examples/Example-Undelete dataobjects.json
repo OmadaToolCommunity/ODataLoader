@@ -1,0 +1,36 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+
+	"actions" :
+	[
+		{
+			"ID" : "UndeleteObjects",
+			"enabled" : 1,
+			"sourceConst": [
+				{"Id":191817},
+				{"Id":154789}
+			],
+			
+			"object" : "Resource",
+			"sourceIdentifier" : "Id",
+			"targetIdentifier" : "Id",
+
+			"operation" : "UnDelete",
+
+			"sleep" : 0,
+			"maxObjects" : 1,
+			"startIndex" : 0,
+            "sourceMaxPages": 10,
+
+			"onError" : "continue",
+			"progressTracking" : false,
+
+            "map": [
+                {
+                    "sourceProperty": "id",
+                    "targetProperty": "id"
+                }
+            ]
+		}
+	]
+}

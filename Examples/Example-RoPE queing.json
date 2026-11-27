@@ -1,0 +1,74 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "QueueIdentites",
+			"enabled" : 1,
+
+			"object" : "ROPEQueing",
+			"sourceOmadaOdataObject": "Identity",
+			"sourceOmadaOdataParamsScript" : "return ('?$select=Id,Displayname&$filter=IDENTITYID ne ''unresolved''&$orderby=Id&$top=2&$skip=' + $page*2)",
+			"sourceMaxPages": 10,
+			
+			"operation" : "ROPEQueueIdentites",
+			"sourceIdentifierScript" : "return 'BatchGrp'",
+			"sourceDisplayName" : "Displayname",			
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "Id",
+						"targetProperty" : "IdentityId",
+						"KeyProperty": "Id"
+					}
+				]			
+		},
+		{
+			"ID" : "QueueIdentitesFromSQLQuery",
+			"enabled" : 1,
+
+			"object" : "ROPEQueing",
+			
+			"sourceOmadaQueryDatabase": "ESARC",
+			"sourceLastIdentifierColumn": "id",
+			"sourceMaxPages": 2,
+
+			"sourceSQLQuery"   : "select top 2 _id id,_displayname displayname",
+			"sourceSQLQuery.2" : "from tblIdentity",
+			"sourceSQLQuery.3" : "where identityid<>'unresolved'",
+			"sourceSQLQuery.4" : "and _deletetime is null",
+			"sourceSQLQuery.5" : "order by _id",
+
+			"sourceSQLQueryNextPageScript"   : "return \"select top 2 _id id,_displayname displayname",
+			"sourceSQLQueryNextPageScript.2" : "from tblIdentity",
+			"sourceSQLQueryNextPageScript.3" : "where identityid<>'unresolved'",
+			"sourceSQLQueryNextPageScript.4" : "and _deletetime is null",
+			"sourceSQLQueryNextPageScript.5" : "and _id>\" + $lastidentifier+ \"",
+			"sourceSQLQueryNextPageScript.6" : "order by _id\"",
+			
+			"operation" : "ROPEQueueIdentites",
+			"sourceIdentifierScript" : "return 'BatchGrp'",
+			"sourceDisplayName" : "Displayname",			
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "Id",
+						"targetProperty" : "IdentityId",
+						"KeyProperty": "Id"
+					}
+				]			
+		}
+	]
+}

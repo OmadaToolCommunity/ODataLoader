@@ -1,0 +1,194 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"connections": [
+		{
+			"connectionName": "appcsv",
+			"sourcefile" : ".\\examples\\AppOnboarding.csv",
+			"sourceDelimiter"  : ","
+		}
+	],
+
+	"actions" :
+	[
+		{
+			"ID" : "CreateUpdateApplication",
+			"enabled" : 0,
+
+			"object" : "System",
+			"connectionName": "appcsv",
+			
+            "operation" : "CreateUpdate",
+            "sourceIdentifier" : "ApplicationID",
+			"sourceDisplayName" : "ApplicationName",
+			"targetIdentifier" : "SYSTEMID",
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+			"map" : 
+				[
+					{
+						"sourceProperty" : "ApplicationID",
+						"targetProperty" : "SYSTEMID",
+						"required"       : true
+					},
+					{						
+						"sourceProperty" : "ApplicationName",
+						"targetProperty" : "NAME",
+						"required"       : true
+					},
+					{
+						"const" : "APPLICATION ACCOUNTS",
+						"targetProperty" : "SYSTEMTRUSTS",
+						"KeyProperty"    : "SYSTEMID"
+					},
+					{
+						"const" : true,
+						"targetProperty" : "AUTOCREATEACCOUNTS"
+					},
+					{
+						"const" : true,
+						"targetProperty" : "ISLOGICALSYSTEM",
+						"required"       : true
+					},
+					{
+						"const": "No",
+						"targetProperty": "PREVENTSELFSVC"
+					},
+					{
+						"const": false,
+						"targetProperty": "PREVENTSELFSVCTHIRDPARTY"
+					}
+				]			
+		},
+		{
+			"ID" : "CreateUpdateResourceFolder",
+			"enabled" : 0,
+
+			"object" : "Resourcefolder",
+			"connectionName": "appcsv",
+			
+            "operation" : "CreateUpdate",
+            "sourceIdentifier" : "ApplicationID",
+			"sourceDisplayName" : "ApplicationName",
+			"targetIdentifier" : "FOLDERID",
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+			"map" : 
+				[
+					{
+						"sourceProperty" : "ApplicationID",
+						"targetProperty" : "FOLDERID",
+						"required"       : true
+					},
+					{						
+						"sourceProperty" : "ApplicationName",
+						"sourceScript"   : "return 'APP.' + $record.ApplicationName",
+						"targetProperty" : "NAME",
+						"required"       : true
+					},
+					{
+						"const" : ["Manager (Context owner)","Resource owner"],
+						"targetProperty" : "APPROVAL",
+						"required"       : true
+					}
+				]			
+		},
+		{
+			"ID" : "CreateUpdateResources",
+			"enabled" : 1,
+
+			"object" : "Resource",
+			"connectionName": "appcsv",
+			
+            "operation" : "CreateUpdate",
+            "sourceIdentifier" : "AppResourceId",
+			"sourceDisplayName" : "AppResourceName",
+			"targetIdentifier" : "ROLEID",
+			
+			"maxObjects" : 0,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"preProcessing": [
+				{
+					"name"          : "Resolve system id",
+					"processingType": "odataResolver",
+					"queryDOT" 		: "System",
+					"queryFilter" 	: "NAME eq '{SystemName}'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "resolvedSystemId"
+				},
+				{
+					"name"          : "Resolve resource id",
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Resource",
+					"queryFilter" 	: "ROLEID eq '{ResourceId}' and SYSTEMREF/Id eq {resolvedSystemId} and RESOURCESTATUS/value eq 'Active'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "ResolvedResourceId"
+				}
+			],			
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "AppResourceId",
+						"targetProperty" : "ROLEID",
+						"required"       : true
+					},
+					{						
+						"sourceProperty" : "AppResourceName",
+						"targetProperty" : "NAME",
+						"required"       : true
+					},
+					{						
+						"const"			 : "Application_Role",
+						"targetProperty" : "ROLETYPEREF",
+						"KeyProperty"	 : "ODWBUSIKEY"
+					},
+					{						
+						"const"			 : "Role",
+						"targetProperty" : "ROLECATEGORY"
+					},
+					{
+						"sourceProperty" : "ApplicationID",
+						"targetProperty" : "SYSTEMREF",
+						"KeyProperty"	 : "SYSTEMID",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "ApplicationID",
+						"targetProperty" : "ROLEFOLDER",
+						"KeyProperty"	 : "FOLDERID",
+						"required"       : true
+					},
+					{						
+						"const"			 : "Personal",
+						"targetProperty" : "ACCOUNTTYPE",
+						"KeyProperty"	 : "NAME"
+					},
+					{						
+						"sourceProperty" : "ResolvedResourceId",
+						"targetProperty" : "CHILDROLES",
+						"KeyProperty"	 : "Id"
+					},
+					{
+						"const": "Active",
+						"targetProperty": "RESOURCESTATUS"
+					},
+					{
+						"const": "No",
+						"targetProperty": "PREVENTSELFSVC"
+					},
+					{
+						"const": false,
+						"targetProperty": "PREVENTSELFSVCTHIRDPARTY"
+					}					
+				]			
+		}
+	]
+}

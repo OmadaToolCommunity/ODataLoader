@@ -1,0 +1,50 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "AttributeValue",
+			"enabled" : 1,
+
+			"object" : "Resource",
+			"sourceConst" :
+			[
+				{
+					"roleId" : "CD",
+					"attrName": "C_SAPATTRIBUTE",
+					"attrValue": "Some value 95"
+				},
+				{
+					"roleId" : "CD",
+					"attrName": "C_SAPATTRIBUTE",
+					"attrValue": "Some value 95"
+				},
+				{
+					"roleId" : "CD",
+					"attrName": "Cost centers",
+					"attrValue": "Some val 99"
+				}
+			],
+			
+            "operation" : "Update",
+            "sourceIdentifier" : "roleId",
+			"sourceDisplayName": "attrValue",
+			"targetIdentifier" : "ROLEID",
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "attrValue",
+						"targetProperty" : "ATTRIBVALUES",
+						"KeyProperty": "attrName"
+					}
+				]			
+		}
+	]
+}

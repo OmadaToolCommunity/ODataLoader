@@ -1,0 +1,106 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+
+	"actions" :
+	[
+		{
+			"ID" : "CreateAccessRequests",
+			"enabled" : 1,
+			"sourcefile" : ".\\examples\\ResourceAssignments.csv",
+			"sourceDelimiter"  : ",",
+			
+			"object" : "GraphQLAccessRequest",
+
+			"sourceIdentifier" : "AssignmentId",
+			"sourceDisplayName": "IdentityId",
+			"targetIdentifier" : "ODWBUSIKEY",
+
+			"operation" : "CreateAccessRequest",
+			"sleep" : 0,
+			"maxObjects" : 1,
+			"startIndex" : 0,
+
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"preProcessing" : [
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Identity",
+					"queryFilter" 	: "IDENTITYID eq '{IdentityId}'",
+					"queryProperty"	: "Uid",
+					"valueProperty" : "resolvedIdentityUid"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "System",
+					"queryFilter" 	: "NAME eq '{SystemName}'",
+					"queryProperty"	: "Uid",
+					"valueProperty" : "resolvedSystemUid"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Resource",
+					"queryFilter" 	: "NAME eq '{ResourceId}' and SYSTEMREF/Uid eq {resolvedSystemUid} and RESOURCESTATUS/value eq 'Active'",
+					"queryProperty"	: "Uid",
+					"valueProperty" : "resolvedResourceUid"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Accounttype",
+					"queryFilter" 	: "NAME eq 'Personal'",
+					"queryProperty"	: "Uid",
+					"valueProperty" : "resolvedaccountTypeUid"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "OrgUnit",
+					"queryFilter" 	: "OUID eq 'ORGANIZATION'",
+					"queryProperty"	: "Uid",
+					"valueProperty" : "resolvedContextUid"
+				}
+			],
+
+			"map" : 
+				[					
+					{
+						"sourceProperty" : "resolvedIdentityUid",
+						"targetProperty" : "IdentityUid",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "resolvedResourceUid",
+						"targetProperty" : "ResourceUid",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "resolvedSystemUid",
+						"targetProperty" : "SystemUid",
+						"required"       : true
+					},
+					{						
+						"sourceScript": "return get-date -Format 'MM/dd/yyyy HH:mm:sszzz'",
+						"inputdateformat": "MM/dd/yyyy HH:mm:sszzz",
+						"targetProperty" : "VALIDFROM"
+					},
+					{
+						"const"			 : "12/31/9999 00:00:00",
+						"inputdateformat": "MM/dd/yyyy HH:mm:ss",
+						"targetProperty" : "VALIDTO"
+					},
+					{
+						"sourceProperty" : "ResolvedAccountTypeUid",
+						"targetProperty" : "AccountTypeUid"
+					},
+					{
+						"sourceProperty": "resolvedContextUid",
+						"targetProperty": "ContextUid"
+					},
+                    {
+						"const"			 : "Auto created during go-live",
+						"targetProperty" : "Reason"
+					}
+				]			
+		}
+	]
+}

@@ -1,0 +1,67 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "DeltaUpdateRole",
+			"enabled" : 1,
+
+			"object" : "Resource",
+			"sourceConst" :
+			[
+				{
+					"roleSystemName" : "SOME APP",
+					"roleId" : "SOMEAPP.PRIV",
+					"deltaOp" : "Add",
+					"childSystemName" : "REST",
+					"childRoleId" : "RESTRESR2"
+				},
+				{
+					"roleSystemName" : "SOME APP",
+					"roleId" : "SOMEAPP.PRIV",
+					"deltaOp" : "Remove",
+					"childSystemName" : "REST",
+					"childRoleId" : "RESTRESR3"
+				}
+			],
+			
+            "operation" : "Update",
+            "sourceIdentifier" : "roleId",
+			"sourceDisplayName" : "childRoleId",
+			"targetIdentifier" : "ROLEID",
+			
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"preProcessing" : [
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "System",
+					"queryFilter" 	: "NAME eq '{childSystemName}'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "resolvedChildSystemId"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Resource",
+					"queryFilter" 	: "ROLEID eq '{childRoleId}' and SYSTEMREF/Id eq {resolvedChildSystemId} and RESOURCESTATUS/value eq 'Active'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "ResolvedChildResourceId"
+				}
+			],
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "ResolvedChildResourceId",
+						"targetProperty" : "CHILDROLES",
+						"KeyProperty"    : "Id",
+						"deltaOpScript" : "return $record.deltaOp"
+					}
+				]			
+		}
+	]
+}

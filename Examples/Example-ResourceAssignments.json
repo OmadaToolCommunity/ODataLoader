@@ -1,0 +1,94 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+
+	"actions" :
+	[
+		{
+			"ID" : "ResourceAssignmentCreateUpdate",
+			"enabled" : 1,
+			"sourcefile" : ".\\examples\\ResourceAssignments.csv",
+			"sourceDelimiter"  : ",",
+			
+			"object" : "Resourceassignment",
+			"sourceIdentifier" : "AssignmentId",
+			"targetIdentifier" : "ODWBUSIKEY",
+
+			"operation" : "FastCreate",
+			"sleep" : 0,
+			"maxObjects" : 0,
+			"startIndex" : 0,
+			"batchSize" : 5,
+			"maxConcurrentJobs" : 2,
+
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"preProcessing" : [
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "System",
+					"queryFilter" 	: "NAME eq '{SystemName}'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "resolvedSystemId"
+				},
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "Resource",
+					"queryFilter" 	: "NAME eq '{ResourceId}' and SYSTEMREF/Id eq {resolvedSystemId} and RESOURCESTATUS/value eq 'Active'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "resolvedResourceId"
+				}
+			],
+
+			"map" : 
+				[
+					{ 
+						"sourceProperty" : "AssignmentId",
+						"targetProperty" : "ODWBUSIKEY",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "IdentityId",
+						"targetProperty" : "IDENTITYREF",
+						"KeyProperty"	 : "IDENTITYID",
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "resolvedResourceId",
+						"targetProperty" : "ROLEREF",
+						"KeyProperty"	 : "Id",						
+						"required"       : true
+					},
+					{
+						"sourceProperty" : "resolvedSystemId",
+						"targetProperty" : "SYSTEMREF",
+						"KeyProperty"	 : "Id",
+						"required"       : true
+					},
+					{						
+						"const"			 : "07/23/2000 00:00:00+02:00",
+						"inputdateformat": "MM/dd/yyyy HH:mm:sszzz",
+						"targetProperty" : "VALIDFROM"
+					},
+					{
+						"const"			 : "12/31/9999 00:00:00",
+						"inputdateformat": "MM/dd/yyyy HH:mm:ss",
+						"targetProperty" : "VALIDTO"
+					},
+					{
+						"targetProperty" : "ROLEASSNSTATUS",
+						"const"			 : "Active"
+					},
+					{
+						"targetProperty" : "ACCOUNTTYPE",
+                        "KeyProperty"	 : "NAME",
+						"const"			 : "Personal"
+					},                    
+                    {
+						"targetProperty" : "DESCRIPTION",
+						"const"			 : "Auto created during go-live"
+					}
+				]			
+		}
+	]
+}

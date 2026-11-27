@@ -1,0 +1,39 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "Expire OPS Claims",
+			"enabled" : 1,
+
+			"sourceOPSClaims": {
+				"OPSClaimStatus" : "Queued",
+				"targetSystemName" : "Omada",
+				"accountName" : "ADA",
+				"identityName" : "",
+				"resource": "",
+				"batchSize" : 100
+			},
+
+			"object" : "OPSClaim",
+			"operation" : "OPSExpireClaim",
+            "sourceIdentifierScript" : "return 'Batchgrp'",
+			"sourceDisplayName" : "JobName",
+
+			"maxObjects" : 1,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"map" : 
+				[
+					{
+						"sourceScript": "return '\"' + $record.provisioningClaimId + '\":\"' + $record.identityId + '\"'",
+						"targetProperty" : "OPSClaim",
+						"KeyProperty": "value"
+					}
+				]			
+		}
+	]
+}

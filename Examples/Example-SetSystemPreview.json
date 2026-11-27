@@ -1,0 +1,67 @@
+{
+	"$schema": "../lib/odataloaderschema.json",
+	"maxLogFiles": 3,
+
+	"actions" :
+	[
+		{
+			"ID" : "Set system preview mode",
+			"enabled" : 1,
+
+			"object" : "SystemReviewMode",
+
+			"sourceConst" :
+			[
+				{
+					"SystemName" : "REST Access",
+                    "enablePreview": true,
+					"commit": "force"
+                },
+				{
+					"SystemName" : "AD1",
+                    "enablePreview": 1,
+					"commit": true
+                }
+			],
+			
+            "operation" : "SetSystemReviewMode",
+            "sourceIdentifier" : "SystemName",
+			"sourceDisplayName" : "enablePreview",
+			"targetIdentifier" : "NAME",
+			
+			"maxObjects" : 0,
+			"onError" : "continue",
+			"progressTracking" : false,
+
+			"preProcessing" : [
+				{
+					"processingType": "odataResolver",
+					"queryDOT" 		: "System",
+					"queryFilter" 	: "NAME eq '{SystemName}'",
+					"queryProperty"	: "Id",
+					"valueProperty" : "resolvedSystemId"
+				}
+			],
+
+			"map" : 
+				[
+					{
+						"sourceProperty" : "resolvedSystemId",
+						"targetProperty" : "SystemId",
+						"KeyProperty": "Id",
+						"required": true
+					},
+					{
+						"sourceProperty": "enablePreview",
+						"targetProperty": "Enable",
+						"required": true
+					},
+					{
+						"sourceProperty": "commit",
+						"targetProperty": "Commit",
+						"required": true
+					}
+				]			
+		}
+	]
+}
