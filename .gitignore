@@ -1,0 +1,9 @@
+test.ps1
+.vscode
+*.bak
+logs
+backups
+schematest.json
+oauthsecret.txt
+lib/chromedriver-win64
+/test
