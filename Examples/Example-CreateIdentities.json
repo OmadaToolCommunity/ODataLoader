@@ -9,7 +9,7 @@
 		"webhost"		      : "rla.omadadev.cloud",
 		"httpDetailedLogging" : 0,
 
-		"authentication" 	  : "OAuthAzureADInteractive",
+		"authentication" 	  : "InvokeBrowserInteractive",
 
 		"Integrated" : "No data required",
 		
@@ -17,12 +17,9 @@
 		{
 			"cookie" : ""
 		},
-		
-		"OAuthAzureADInteractive" : 
-		{
-			"oauthTenantId"  : "",			
-			"oauthClientId"  : "",
-			"oauthScope"     : "api:///omada"
+    
+		"InvokeBrowserInteractive" : {
+			"chromedebugport" : 9222
 		},
 
 		"OAuthAzureADClientCredentials" : 
